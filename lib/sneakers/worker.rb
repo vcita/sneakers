@@ -20,6 +20,7 @@ module Sneakers
       @timeout_after = opts[:timeout_job_after]
       @pool = pool || Thread.pool(opts[:threads]) # XXX config threads
       @call_with_params = respond_to?(:work_with_params)
+      @hide_msg_content = opts[:hide_msg_content] == true
 
       @queue = queue || Sneakers::Queue.new(
         queue_name,
@@ -42,7 +43,7 @@ module Sneakers
     end
 
     def do_work(delivery_info, metadata, msg, handler)
-      worker_trace "Working off: #{msg}"
+      worker_trace "Working off: #{msg}" unless @hide_msg_content
 
       @pool.process do
         res = nil
